@@ -8,17 +8,39 @@
 
 #import "ViewController.h"
 #import "ASIHTTPRequest.h"
+#import "NSObject+SBJson.h"
 @interface ViewController ()
 
 @end
 
 @implementation ViewController
 
-- (void)viewDidLoad
+
+-(void)getDate:(id)sender
 {
-    ASIHTTPRequest *request =[[ASIHTTPRequest alloc] initWithURL:[[[NSURL alloc] initWithString:@"http://www.baidu.com"]autorelease]];
+    NSString   *city = [NSString stringWithFormat:@"%@",nameField.text];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/geocode/json?address=%@&sensor=true", city]];
+    NSLog(@"city:%@",city);
+    ASIHTTPRequest *request =[[[ASIHTTPRequest alloc] initWithURL:url]autorelease];
     request.delegate = self;
     [request startAsynchronous];
+    
+}
+
+- (void)viewDidLoad
+{
+    UIButton    *mapBtn = [[UIButton alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
+    [mapBtn setTitle:@"get" forState:UIControlStateNormal];
+    [mapBtn addTarget:self action:@selector(getDate:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:mapBtn];
+    [mapBtn release];
+    
+    nameField = [[UITextField alloc] initWithFrame:CGRectMake(50, 150, 80, 30)];
+    [self.view addSubview:nameField];
+    nameField.backgroundColor = [UIColor redColor];
+    nameField.delegate = self;
+    [nameField release];
+    
     
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
@@ -38,6 +60,20 @@
 - (void)requestFinished:(ASIHTTPRequest *)request
 {
     NSString *string = [request responseString];
+    NSDictionary *dic = [string JSONValue];
+    id result = [dic objectForKey:@"results"];
     NSLog(@"string:%@",string);
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSLog(@"failed:%@",request.error);
+}
+
+#pragma mark -textFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [nameField resignFirstResponder];
+    return YES;
 }
 @end

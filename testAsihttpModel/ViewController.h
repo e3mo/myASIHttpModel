@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "ASIHTTPRequest.h"
 @class ASIHTTPRequest;
-@interface ViewController : UIViewController <ASIHTTPRequestDelegate>
+@interface ViewController : UIViewController <ASIHTTPRequestDelegate,UITextFieldDelegate>
+{
+    UITextField *nameField;
+}
 
 @end
